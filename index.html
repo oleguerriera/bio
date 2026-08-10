@@ -1,1 +1,726 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Perfil d'Oleguer Riera">
+    <title>Oleguer Riera - Bio</title>
+    <style>
+        /* ==========================================================================
+           Variables i Configuració Base
+           ========================================================================== */
+        :root {
+            --bg-color: #f4f5f7; 
+            --white: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            
+            /* Ombres subtils */
+            --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04);
+            --shadow-float: 0 6px 20px rgba(0, 0, 0, 0.06);
+            
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
 
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Curva d'animació ultra fluida estil iOS */
+            --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* Gradient animat de blancs trencats */
+            background: linear-gradient(-45deg, #f8fafc, #f3f4f6, #ffffff, #eef2f5);
+            background-size: 400% 400%;
+            animation: moveGradient 15s ease infinite;
+            
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem 6rem 1rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Animació del fons */
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==========================================================================
+           Contenidor Principal
+           ========================================================================== */
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* ==========================================================================
+           Capçalera / Perfil Minimalista
+           ========================================================================== */
+        header {
+            position: sticky;
+            top: 1rem;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideDown 0.5s ease-out forwards;
+            padding-bottom: 0.5rem;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 86px; 
+            height: 86px;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-float);
+        }
+
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-full);
+            border: 3px solid var(--white);
+        }
+
+        .username-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.35rem 0.9rem;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid rgba(255, 255, 255, 1);
+            margin-top: -12px;
+            z-index: 3;
+        }
+
+        .pill-logo {
+            display: flex;
+            align-items: center;
+            color: #e1306c;
+        }
+
+        .pill-logo svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .username-pill h1 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text-main);
+        }
+
+        /* ==========================================================================
+           Llista d'Enllaços
+           ========================================================================== */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-full); 
+            box-shadow: var(--shadow-subtle);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.25s var(--ease-fluid), box-shadow 0.25s ease;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+            animation-delay: calc(var(--order) * 0.08s);
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+
+        .link-card:hover, .link-card:focus {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+            outline: none;
+        }
+
+        .link-card.is-hidden {
+            visibility: hidden !important;
+        }
+
+        .link-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-full);
+            background-color: #f8fafc;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            overflow: hidden;
+            padding: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .link-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-full);
+        }
+
+        .link-logo img.padding-transparent {
+            padding: 5px;
+        }
+
+        .link-logo img.cover-fill {
+            object-fit: cover;
+            padding: 0;
+        }
+
+        .link-content {
+            flex-grow: 1;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .link-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.2;
+            margin-bottom: 0.15rem;
+        }
+
+        .link-url {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .link-arrow {
+            color: #d1d5db;
+            flex-shrink: 0;
+            padding-right: 0.4rem;
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .link-card:hover .link-arrow {
+            color: var(--text-main);
+            transform: translateX(2px);
+        }
+
+        /* ==========================================================================
+           Element per a l'animació de Morphing (Ghost Morph Layer)
+           ========================================================================== */
+        .morph-clone {
+            position: fixed;
+            z-index: 1001;
+            background-color: var(--white);
+            box-shadow: var(--shadow-subtle);
+            pointer-events: none;
+            overflow: hidden;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: top, left, width, height, border-radius, box-shadow;
+            transition: top 0.4s var(--ease-fluid),
+                        left 0.4s var(--ease-fluid),
+                        width 0.4s var(--ease-fluid),
+                        height 0.4s var(--ease-fluid),
+                        border-radius 0.4s var(--ease-fluid),
+                        box-shadow 0.4s var(--ease-fluid);
+        }
+
+        .morph-clone-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            transition: opacity 0.18s ease;
+            backface-visibility: hidden;
+        }
+
+        .morph-clone.expanding .morph-clone-inner {
+            opacity: 0;
+        }
+
+        /* ==========================================================================
+           Navegador Full Screen
+           ========================================================================== */
+        .web-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .web-viewer.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Barra de navegació superior */
+        .web-viewer-header {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            gap: 1rem;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(-12px);
+            transition: opacity 0.28s var(--ease-fluid), transform 0.28s var(--ease-fluid);
+        }
+
+        .web-viewer.active .web-viewer-header {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .web-viewer-url-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f1f5f9;
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-full);
+            flex-grow: 1;
+            max-width: fit-content;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .web-viewer-url-icon {
+            color: #64748b;
+            display: flex;
+            align-items: center;
+        }
+
+        .web-viewer-url-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .close-btn {
+            background-color: #f1f5f9;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .close-btn:hover {
+            background-color: #e2e8f0;
+            transform: scale(1.05);
+        }
+
+        .close-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Frame del lloc web */
+        .web-viewer-frame {
+            width: 100%;
+            height: calc(100vh - 60px);
+            border: none;
+            background-color: #ffffff;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.1s;
+        }
+
+        .web-viewer.active .web-viewer-frame {
+            opacity: 1;
+        }
+
+        /* ==========================================================================
+           Xarxes Socials Inferiors
+           ========================================================================== */
+        .bottom-fade-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 3rem 0 1.5rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 50;
+            background: linear-gradient(to top, rgba(244, 245, 247, 0.9) 30%, rgba(244, 245, 247, 0.3) 70%, transparent);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        body.has-active-viewer .bottom-fade-container {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .socials-wrapper {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .social-icon {
+            color: var(--text-main);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+        }
+
+        .social-icon:hover, .social-icon:focus {
+            transform: scale(1.15) translateY(-2px);
+            opacity: 1;
+            outline: none;
+        }
+
+        /* ==========================================================================
+           Animacions d'entrada
+           ========================================================================== */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contingut Central -->
+    <div class="container">
+        
+        <!-- Capçalera Minimalista (Avatar + Nom) -->
+        <header>
+            <div class="profile-image-container">
+                <img src="https://imgdb.io/i/NoMR70o.webp" alt="Foto de perfil">
+            </div>
+            
+            <div class="username-pill">
+                <div class="pill-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </div>
+                <h1>@oleguerriera</h1>
+            </div>
+        </header>
+
+        <!-- Llista d'Enllaços Generada per JS -->
+        <main id="links-container"></main>
+    </div>
+
+    <!-- Navegador Full Screen -->
+    <div class="web-viewer" id="web-viewer">
+        <div class="web-viewer-header">
+            <div class="web-viewer-url-box">
+                <span class="web-viewer-url-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </span>
+                <span class="web-viewer-url-text" id="viewer-url-text">https://...</span>
+            </div>
+
+            <button class="close-btn" id="close-viewer-btn" aria-label="Tancar navegador">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <iframe id="web-viewer-frame" class="web-viewer-frame" src="" title="Vista web integrada"></iframe>
+    </div>
+
+    <!-- Xarxes Socials Inferiors -->
+    <div class="bottom-fade-container">
+        <div class="socials-wrapper">
+            <a href="https://tiktok.com" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                </svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener" class="social-icon" aria-label="YouTube">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path>
+                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Script JS amb animació de Morphing integrada sense flaixos -->
+    <script>
+        const linksData = [
+            {
+                title: "ulaGPT",
+                displayUrl: "ulagpt.ulahost.dynv6.net",
+                fullUrl: "https://ulagpt.ulahost.dynv6.net/",
+                imgSrc: "https://imgdb.io/i/Dc69zx8.webp",
+                imgClass: "padding-transparent"
+            },
+            {
+                title: "ulaGames",
+                displayUrl: "oriera26.github.io",
+                fullUrl: "https://oriera26.github.io/unblocked-games",
+                imgSrc: "https://imgdb.io/i/VS2z9y4.webp",
+                imgClass: "padding-transparent"
+            },
+            {
+                title: "ulaChat",
+                displayUrl: "ula2chat.ulahost.dynv6.net",
+                fullUrl: "https://ula2chat.ulahost.dynv6.net/",
+                imgSrc: "https://imgdb.io/i/B549isI.webp",
+                imgClass: "cover-fill"
+            }
+        ];
+
+        const linksContainer = document.getElementById('links-container');
+        const webViewer = document.getElementById('web-viewer');
+        const webViewerFrame = document.getElementById('web-viewer-frame');
+        const viewerUrlText = document.getElementById('viewer-url-text');
+        const closeViewerBtn = document.getElementById('close-viewer-btn');
+
+        let currentActiveCard = null;
+        let activeClone = null;
+
+        function renderLinks() {
+            linksContainer.innerHTML = '';
+            
+            linksData.forEach((link, index) => {
+                const card = document.createElement('button');
+                card.className = 'link-card';
+                card.style.setProperty('--order', index + 1);
+                
+                card.innerHTML = `
+                    <div class="link-logo">
+                        <img src="${link.imgSrc}" alt="${link.title} Logo" class="${link.imgClass}">
+                    </div>
+                    <div class="link-content">
+                        <span class="link-title">${link.title}</span>
+                        <span class="link-url">${link.displayUrl}</span>
+                    </div>
+                    <div class="link-arrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    startFluidMorph(card, link.fullUrl);
+                });
+
+                linksContainer.appendChild(card);
+            });
+        }
+
+        // Sistema de Morphing fluït i sense flaixos
+        function startFluidMorph(card, targetUrl) {
+            currentActiveCard = card;
+            const rect = card.getBoundingClientRect();
+            const initialRadius = `${rect.height / 2}px`; // Radi exacte en píxels per evitar salts
+
+            // 1. Crear el clon per a la transició
+            activeClone = document.createElement('div');
+            activeClone.className = 'morph-clone';
+            
+            const innerContent = document.createElement('div');
+            innerContent.className = 'morph-clone-inner';
+            innerContent.innerHTML = card.innerHTML;
+            activeClone.appendChild(innerContent);
+
+            // Posicionar el clon exactament sobre la targeta
+            activeClone.style.top = `${rect.top}px`;
+            activeClone.style.left = `${rect.left}px`;
+            activeClone.style.width = `${rect.width}px`;
+            activeClone.style.height = `${rect.height}px`;
+            activeClone.style.borderRadius = initialRadius;
+
+            document.body.appendChild(activeClone);
+
+            // Ocultar targeta original
+            card.classList.add('is-hidden');
+            document.body.classList.add('has-active-viewer');
+
+            // Carregar contingut del navegador
+            viewerUrlText.textContent = targetUrl;
+            webViewerFrame.src = targetUrl;
+
+            // 2. Iniciar transició cap a pantalla completa
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    activeClone.classList.add('expanding');
+                    activeClone.style.top = '0px';
+                    activeClone.style.left = '0px';
+                    activeClone.style.width = '100vw';
+                    activeClone.style.height = '100vh';
+                    activeClone.style.borderRadius = '0px';
+                    activeClone.style.boxShadow = 'none';
+                });
+            });
+
+            // Activar el viewer a mitja animació per coordinar la capçalera
+            setTimeout(() => {
+                webViewer.classList.add('active');
+            }, 140);
+
+            // 3. Eliminar el clon un cop l'animació ha acabat sense tall cap a la capa blanca
+            setTimeout(() => {
+                if (activeClone) {
+                    activeClone.remove();
+                    activeClone = null;
+                }
+            }, 400);
+        }
+
+        function closeFluidMorph() {
+            if (!currentActiveCard) {
+                webViewer.classList.remove('active');
+                document.body.classList.remove('has-active-viewer');
+                webViewerFrame.src = '';
+                return;
+            }
+
+            const rect = currentActiveCard.getBoundingClientRect();
+            const targetRadius = `${rect.height / 2}px`;
+
+            // 1. Amagar viewer real i crear el clon
+            webViewer.classList.remove('active');
+
+            activeClone = document.createElement('div');
+            activeClone.className = 'morph-clone expanding';
+            activeClone.style.top = '0px';
+            activeClone.style.left = '0px';
+            activeClone.style.width = '100vw';
+            activeClone.style.height = '100vh';
+            activeClone.style.borderRadius = '0px';
+            activeClone.style.boxShadow = 'none';
+
+            const innerContent = document.createElement('div');
+            innerContent.className = 'morph-clone-inner';
+            innerContent.style.opacity = '0';
+            innerContent.innerHTML = currentActiveCard.innerHTML;
+            activeClone.appendChild(innerContent);
+
+            document.body.appendChild(activeClone);
+
+            // 2. Animació de retorn cap a la targeta
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    activeClone.classList.remove('expanding');
+                    activeClone.style.top = `${rect.top}px`;
+                    activeClone.style.left = `${rect.left}px`;
+                    activeClone.style.width = `${rect.width}px`;
+                    activeClone.style.height = `${rect.height}px`;
+                    activeClone.style.borderRadius = targetRadius;
+                    activeClone.style.boxShadow = 'var(--shadow-subtle)';
+                    innerContent.style.opacity = '1';
+                });
+            });
+
+            // 3. Finalitzar i restaurar estat
+            setTimeout(() => {
+                if (activeClone) {
+                    activeClone.remove();
+                    activeClone = null;
+                }
+                if (currentActiveCard) {
+                    currentActiveCard.classList.remove('is-hidden');
+                    currentActiveCard = null;
+                }
+                document.body.classList.remove('has-active-viewer');
+                webViewerFrame.src = '';
+            }, 400);
+        }
+
+        // Escoltadors d'esdeveniments
+        closeViewerBtn.addEventListener('click', closeFluidMorph);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && (webViewer.classList.contains('active') || activeClone)) {
+                closeFluidMorph();
+            }
+        });
+
+        // Inicialització
+        renderLinks();
+    </script>
+
+</body>
+</html>
