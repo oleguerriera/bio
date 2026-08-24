@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Perfil d'Oleguer Riera">
+    <title>Oleguer Riera - Bio</title>
+    <style>
+        :root {
+            --bg-color: #f4f5f7; 
+            --white: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04);
+            --shadow-float: 0 6px 20px rgba(0, 0, 0, 0.06);
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #f8fafc, #f3f4f6, #ffffff, #eef2f5);
+            background-size: 400% 400%;
+            animation: moveGradient 15s ease infinite;
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem 6rem 1rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            position: relative;
+            transform: translateZ(0);
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Orbes ambientals globals amb blur intens i moviment ràpid */
+        .ambient-orbs-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(75px); /* Blur molt més fort */
+            opacity: 0.55;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .orb-ig-1 {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, #ff7a00 0%, #ff0069 50%, #d600f7 100%);
+        }
+
+        .orb-ig-2 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            z-index: 2;
+            will-change: opacity, transform;
+            transform: translateZ(0);
+        }
+
+        header {
+            position: sticky;
+            top: 1rem;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 0.5rem;
+            transform: translateZ(0);
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 86px; 
+            height: 86px;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-float);
+            transform: translateZ(0);
+        }
+
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-full);
+            border: 3px solid var(--white);
+            transform: translateZ(0);
+        }
+
+        .username-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.35rem 0.9rem;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid rgba(255, 255, 255, 1);
+            margin-top: -12px;
+            z-index: 3;
+            transform: translateZ(0);
+        }
+
+        .pill-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .pill-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .username-pill h1 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text-main);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 10;
+            transform: translateZ(0);
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-full); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            width: 100%;
+            text-align: left;
+            position: relative;
+            transition: transform 0.2s var(--ease-fluid), box-shadow 0.2s ease, background-color 0.2s ease;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px) translateZ(0);
+            background-color: rgba(255, 255, 255, 0.85);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .link-card.is-hidden {
+            visibility: hidden !important;
+        }
+
+        .link-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-full);
+            background-color: rgba(255, 255, 255, 0.5);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            overflow: hidden;
+            padding: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transform: translateZ(0);
+        }
+        
+        .link-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-full);
+        }
+
+        .link-logo img.padding-transparent {
+            padding: 5px;
+        }
+
+        .link-logo img.cover-fill {
+            object-fit: cover;
+            padding: 0;
+        }
+
+        .link-content {
+            flex-grow: 1;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .link-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.2;
+            margin-bottom: 0.15rem;
+        }
+
+        .link-url {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .link-arrow {
+            color: #d1d5db;
+            flex-shrink: 0;
+            padding-right: 0.4rem;
+        }
+
+        .web-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s var(--ease-fluid);
+            will-change: opacity;
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        .web-viewer.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .web-viewer-header {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            z-index: 10;
+            transform: translateZ(0);
+        }
+
+        .viewer-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.15s ease 0.08s;
+            transform: translateZ(0);
+        }
+
+        .web-viewer.active .viewer-profile-info {
+            opacity: 1;
+        }
+
+        .viewer-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            background: #f8fafc;
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateZ(0);
+        }
+
+        .viewer-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .viewer-texts {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .viewer-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .viewer-url {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .close-btn {
+            background-color: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            opacity: 0;
+            transform: scale(0.8) translateZ(0);
+            transition: opacity 0.2s var(--ease-fluid) 0.08s, transform 0.2s var(--ease-fluid) 0.08s, background-color 0.2s ease;
+        }
+
+        .web-viewer.active .close-btn {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+        }
+
+        .close-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .morph-transit {
+            position: fixed;
+            z-index: 1005;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            pointer-events: none;
+            will-change: transform, width, height, top, left;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            transition: all 0.35s var(--ease-fluid);
+        }
+
+        .morph-transit .link-logo {
+            width: 52px;
+            height: 52px;
+            transition: width 0.35s var(--ease-fluid), height 0.35s var(--ease-fluid);
+        }
+
+        .morph-transit .link-content {
+            padding: 0 0.75rem;
+        }
+
+        .morph-transit .link-arrow {
+            display: none;
+        }
+
+        .web-viewer-frame {
+            width: 100%;
+            height: calc(100vh - 70px);
+            border: none;
+            background-color: transparent;
+            position: relative;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.05s;
+            transform: translateZ(0);
+        }
+
+        .web-viewer.active .web-viewer-frame {
+            opacity: 1;
+        }
+
+        .bottom-fade-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 3rem 0 1.5rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 50;
+            background: linear-gradient(to top, rgba(244, 245, 247, 0.9) 30%, rgba(244, 245, 247, 0.3) 70%, transparent);
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+            transform: translateZ(0);
+        }
+
+        body.has-active-viewer .bottom-fade-container {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .socials-wrapper {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; 
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transform: translateZ(0);
+        }
+
+        .social-icon {
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 0;
+            transform: translateZ(0);
+        }
+
+        .social-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-full);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Orbes ambientals globals amb blur fort i moviment ràpid -->
+    <div class="ambient-orbs-container" id="orbes-container">
+        <div class="orb orb-ig-1" id="orb1"></div>
+        <div class="orb orb-ig-2" id="orb2"></div>
+    </div>
+
+    <div class="container" id="main-container">
+        <header>
+            <div class="profile-image-container">
+                <img src="https://imgdb.io/i/NoMR70o.webp" alt="">
+            </div>
+            
+            <div class="username-pill">
+                <div class="pill-logo">
+                    <img src="https://i.ibb.co/r27PXdn1/instagram.png" alt="">
+                </div>
+                <h1>@oleguerriera</h1>
+            </div>
+        </header>
+
+        <main id="links-container"></main>
+    </div>
+
+    <!-- Visor Web -->
+    <div class="web-viewer" id="web-viewer">
+        <div class="web-viewer-header">
+            <div class="viewer-profile-info">
+                <div class="viewer-logo" id="viewer-logo-box">
+                    <img id="viewer-logo-img" src="" alt="[Image of Logo]">
+                </div>
+                <div class="viewer-texts">
+                    <span class="viewer-title" id="viewer-title-text">Títol</span>
+                    <span class="viewer-url" id="viewer-url-text">enllaç</span>
+                </div>
+            </div>
+
+            <button class="close-btn" id="close-viewer-btn" aria-label="Tancar navegador">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <iframe class="web-viewer-frame" id="web-viewer-frame" src="" title="" loading="lazy"></iframe>
+    </div>
+
+    <!-- Xarxes Socials Inferiors -->
+    <div class="bottom-fade-container">
+        <div class="socials-wrapper">
+            <a href="https://bere.al/oleguerriera" target="_blank" rel="noopener" class="social-icon" aria-label="BeReal">
+                <img src="https://i.ibb.co/KjyZpGfQ/bereal.png" alt="">
+            </a>
+            <a href="https://snapchat.com/add/oleguerriera" target="_blank" rel="noopener" class="social-icon" aria-label="Snapchat">
+                <img src="https://i.ibb.co/Tx7sr4NZ/snapchat.png" alt="">
+            </a>
+            <a href="https://tiktok.com/@oleguerriera" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok">
+                <img src="https://i.ibb.co/q3g0LqKP/tiktok.png" alt="">
+            </a>
+            <a href="https://www.instagram.com/oleguerriera" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+                <img src="https://i.ibb.co/r27PXdn1/instagram.png" alt="">
+            </a>
+            <a href="https://www.youtube.com/@oleguerriera" target="_blank" rel="noopener" class="social-icon" aria-label="YouTube">
+                <img src="https://i.ibb.co/6Rm0XkmD/youtube.png" alt="[Image of YouTube]">
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const linksData = [
+            {
+                title: "ulaGPT",
+                displayUrl: "ulagpt.ulahost.2bd.net",
+                fullUrl: "https://ulagpt.ulahost.2bd.net/",
+                imgSrc: "https://imgdb.io/i/Dc69zx8.webp",
+                imgClass: "padding-transparent"
+            },
+            {
+                title: "ulaGames",
+                displayUrl: "oriera26.github.io",
+                fullUrl: "https://oriera26.github.io/unblocked-games",
+                imgSrc: "https://imgdb.io/i/VS2z9y4.webp",
+                imgClass: "padding-transparent"
+            },
+            {
+                title: "ulaChat",
+                displayUrl: "ula2chat.ulahost.2bd.net",
+                fullUrl: "https://ula2chat.ulahost.2bd.net/",
+                imgSrc: "https://imgdb.io/i/B549isI.webp",
+                imgClass: "cover-fill"
+            }
+        ];
+
+        const linksContainer = document.getElementById('links-container');
+        const webViewer = document.getElementById('web-viewer');
+        const webViewerFrame = document.getElementById('web-viewer-frame');
+        const viewerTitleText = document.getElementById('viewer-title-text');
+        const viewerUrlText = document.getElementById('viewer-url-text');
+        const viewerLogoImg = document.getElementById('viewer-logo-img');
+        const closeViewerBtn = document.getElementById('close-viewer-btn');
+        const mainContainer = document.getElementById('main-container');
+        const orb1 = document.getElementById('orb1');
+        const orb2 = document.getElementById('orb2');
+
+        let activeCard = null;
+        let animationFrameId = null;
+
+        // Velocitats augmentades per a un moviment molt més dinàmic i ràpid
+        let x1 = 120, y1 = 120, vx1 = 1.2, vy1 = 0.95;
+        let x2 = 350, y2 = 350, vx2 = -1.1, vy2 = -1.25;
+
+        function animateOrbes() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            x1 += vx1; y1 += vy1;
+            x2 += vx2; y2 += vy2;
+
+            if (x1 < -50 || x1 > width - 150) vx1 *= -1;
+            if (y1 < -50 || y1 > height - 150) vy1 *= -1;
+            if (x2 < -50 || x2 > width - 150) vx2 *= -1;
+            if (y2 < -50 || y2 > height - 150) vy2 *= -1;
+
+            const dx = x1 - x2;
+            const dy = y1 - y2;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const minDistance = 220;
+
+            if (distance < minDistance) {
+                const tempVx = vx1; vx1 = vx2; vx2 = tempVx;
+                const tempVy = vy1; vy1 = vy2; vy2 = tempVy;
+                x1 += vx1 * 4; y1 += vy1 * 4;
+                x2 += vx2 * 4; y2 += vy2 * 4;
+            }
+
+            orb1.style.transform = `translate(${x1}px, ${y1}px)`;
+            orb2.style.transform = `translate(${x2}px, ${y2}px)`;
+
+            animationFrameId = requestAnimationFrame(animateOrbes);
+        }
+
+        window.addEventListener('load', () => {
+            animateOrbes();
+        });
+
+        function renderLinks() {
+            linksContainer.innerHTML = '';
+            
+            linksData.forEach((link, index) => {
+                const card = document.createElement('button');
+                card.className = 'link-card';
+                card.style.setProperty('--order', index + 1);
+                
+                card.innerHTML = `
+                    <div class="link-logo">
+                        <img src="${link.imgSrc}" alt="[Image of Logo]" class="${link.imgClass}" decoding="async">
+                    </div>
+                    <div class="link-content">
+                        <span class="link-title">${link.title}</span>
+                        <span class="link-url">${link.displayUrl}</span>
+                    </div>
+                    <div class="link-arrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    startMorph(card, link);
+                });
+
+                linksContainer.appendChild(card);
+            });
+        }
+
+        function startMorph(card, link) {
+            activeCard = card;
+            const startRect = card.getBoundingClientRect();
+            
+            card.classList.add('is-hidden');
+            document.body.classList.add('has-active-viewer');
+
+            document.body.style.background = '#ffffff';
+            mainContainer.style.opacity = '0';
+
+            viewerTitleText.textContent = link.title;
+            viewerUrlText.textContent = link.displayUrl;
+            viewerLogoImg.src = link.imgSrc;
+            viewerLogoImg.className = link.imgClass;
+
+            const transit = document.createElement('div');
+            transit.className = 'morph-transit';
+            transit.style.top = `${startRect.top}px`;
+            transit.style.left = `${startRect.left}px`;
+            transit.style.width = `${startRect.width}px`;
+            transit.style.height = `${startRect.height}px`;
+            transit.innerHTML = `
+                <div class="link-logo">
+                    <img src="${link.imgSrc}" class="${link.imgClass}" alt="[Image of Logo]" decoding="async">
+                </div>
+                <div class="link-content">
+                    <span class="link-title">${link.title}</span>
+                    <span class="link-url">${link.displayUrl}</span>
+                </div>
+            `;
+            document.body.appendChild(transit);
+
+            webViewerFrame.src = link.fullUrl;
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    transit.style.top = '13px';
+                    transit.style.left = '16px';
+                    transit.style.width = '240px';
+                    transit.style.height = '44px';
+                    const transitLogo = transit.querySelector('.link-logo');
+                    if (transitLogo) {
+                        transitLogo.style.width = '44px';
+                        transitLogo.style.height = '44px';
+                    }
+                });
+            });
+
+            setTimeout(() => {
+                webViewer.classList.add('active');
+                transit.remove();
+            }, 350);
+        }
+
+        function closeViewer() {
+            webViewer.classList.remove('active');
+            webViewerFrame.src = '';
+            document.body.classList.remove('has-active-viewer');
+
+            document.body.style.background = '';
+            mainContainer.style.opacity = '1';
+
+            if (activeCard) {
+                activeCard.classList.remove('is-hidden');
+                activeCard = null;
+            }
+        }
+
+        closeViewerBtn.addEventListener('click', closeViewer);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeViewer();
+            }
+        });
+
+        renderLinks();
+    </script>
+
+</body>
+</html>
