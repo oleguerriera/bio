@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ca" class="h-full w-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Troba el Territori</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- D3.js and TopoJSON -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <!-- d3-composite-projections for better map rendering (moves Canaries) -->
+    <script src="https://unpkg.com/d3-composite-projections@1.4.0/d3-composite-projections.min.js"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #8b5cf6, #3b82f6);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            touch-action: none; /* Prevent pull-to-refresh */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism utility classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* Map Styles */
+        #map-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .map-region {
+            fill: rgba(255, 255, 255, 0.25);
+            stroke: rgba(255, 255, 255, 0.6);
+            stroke-width: 0.8px;
+            stroke-linejoin: round;
+            transition: fill 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease;
+            cursor: pointer;
+            transform-origin: center;
+        }
+
+        @media (hover: hover) {
+            .map-region:hover {
+                fill: rgba(255, 255, 255, 0.45);
+            }
+        }
+
+        .map-region.correct {
+            fill: rgba(34, 197, 94, 0.85) !important;
+            stroke: rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+        }
+
+        /* Error Animation */
+        @keyframes flashError {
+            0%, 100% { fill: rgba(255, 255, 255, 0.25); transform: translateX(0); }
+            30% { fill: rgba(239, 68, 68, 0.9); transform: translateX(-4px); }
+            70% { fill: rgba(239, 68, 68, 0.9); transform: translateX(4px); }
+        }
+
+        .map-region.error {
+            animation: flashError 0.4s ease;
+        }
+
+        /* No scrollbar utility */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-white select-none">
+
+    <div id="map-container" class="flex items-center justify-center">
+        <!-- SVG injected by D3 -->
+        <svg id="d3-canvas" class="w-full h-full"></svg>
+    </div>
+
+    <div class="absolute top-0 left-0 w-full p-4 md:p-6 z-10 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 pointer-events-none">
+        
+        <!-- Target Banner -->
+        <div class="glass-panel rounded-2xl px-6 py-3 flex flex-col items-center justify-center pointer-events-auto w-auto min-w-[200px]">
+            <span class="text-[10px] uppercase tracking-[0.2em] opacity-70 font-semibold mb-0.5">Troba</span>
+            <span id="target-name" class="text-xl md:text-2xl font-bold tracking-tight text-white drop-shadow-md text-center leading-tight">
+                Carregant...
+            </span>
+        </div>
+
+        <!-- Mode Switcher Segmented Control -->
+        <div class="glass-panel rounded-full p-1 flex items-center space-x-1 pointer-events-auto">
+            <button onclick="setMode('ccaa')" id="btn-ccaa" class="mode-btn relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 text-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] bg-white/20">
+                CCAA
+            </button>
+            <button onclick="setMode('prov')" id="btn-prov" class="mode-btn relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 text-white/60 hover:text-white">
+                PROV
+            </button>
+            <button onclick="setMode('com')" id="btn-com" class="mode-btn relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 text-white/60 hover:text-white">
+                COM
+            </button>
+        </div>
+    </div>
+
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
+        <div class="glass-panel rounded-full px-5 py-2.5 flex items-center space-x-4 pointer-events-auto">
+            <!-- Timer -->
+            <div id="timer-display" class="font-mono text-lg font-bold w-[72px] text-center drop-shadow-sm">
+                0.0s
+            </div>
+            
+            <div class="w-px h-5 bg-white/30"></div>
+            
+            <!-- Reload Icon Button -->
+            <button onclick="startRound()" class="text-white hover:text-green-300 transition-colors duration-200 active:scale-95" title="Tornar a jugar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="end-overlay" class="absolute inset-0 bg-black/40 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-panel bg-white/20 rounded-3xl p-8 max-w-sm w-[90%] flex flex-col items-center text-center transform scale-95 transition-transform duration-300" id="end-modal">
+            <div class="w-14 h-14 bg-green-400/20 text-green-300 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold mb-1 tracking-tight drop-shadow-md">Completat</h2>
+            <div class="font-mono text-4xl font-bold mt-4 mb-6 text-white drop-shadow-lg" id="final-time">0.0s</div>
+            
+            <button onclick="closeOverlayAndRestart()" class="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/40 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Tornar a jugar</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data Sources configuration
+        const MODES = {
+            'ccaa': {
+                urls: [
+                    'https://raw.githubusercontent.com/deldersveld/topojson/master/countries/spain/spain-comunidad-with-canary-islands.json'
+                ],
+                type: 'topojson',
+                topoObject: 'ESP_adm1',
+                projectionType: 'spain'
+            },
+            'prov': {
+                urls: [
+                    'https://raw.githubusercontent.com/deldersveld/topojson/master/countries/spain/spain-province-with-canary-islands.json'
+                ],
+                type: 'topojson',
+                topoObject: 'ESP_adm2',
+                projectionType: 'spain'
+            },
+            'com': {
+                urls: [
+                    'https://raw.githubusercontent.com/jatorre/GeoJSON-Catalunya/master/comarques.geojson',
+                    'https://raw.githubusercontent.com/martgnz/bcn-geodata/master/catalunya/comarques.geojson'
+                ],
+                type: 'geojson',
+                projectionType: 'catalonia'
+            }
+        };
+
+        // State
+        let currentMode = 'ccaa';
+        let currentGeoJSON = null;
+        let regionList = [];
+        let remainingRegions = [];
+        let currentTarget = null;
+        let foundRegions = new Set();
+        
+        let timerInterval = null;
+        let startTime = null;
+        let isPlaying = false;
+
+        function getRegionName(properties) {
+            if (!properties) return null;
+            // Handle different dataset property conventions
+            const keys = ['NAME_1', 'NAME_2', 'nom_comar', 'NOM_COMAR', 'comarca', 'name', 'nom'];
+            for (let key of keys) {
+                if (properties[key] && typeof properties[key] === 'string') {
+                    // Quick cleanups for specific datasets
+                    let name = properties[key].replace(/, Comunidad de|Comunidad de |Comunidad Foral de |Región de |Ciudad Autónoma de /g, '');
+                    return name.trim();
+                }
+            }
+            return null;
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        async function fetchMapData(mode) {
+            const config = MODES[mode];
+            let data = null;
+            
+            // Try URLs in order until one succeeds
+            for (let url of config.urls) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    data = await response.json();
+                    break; 
+                } catch (e) {
+                    console.warn(`Failed to fetch ${url}`, e);
+                }
+            }
+
+            if (!data) {
+                document.getElementById('target-name').innerText = "Error carregant mapes";
+                return null;
+            }
+
+            // Convert TopoJSON to GeoJSON if necessary
+            let geojson;
+            if (config.type === 'topojson') {
+                geojson = topojson.feature(data, data.objects[config.topoObject]);
+            } else {
+                geojson = data;
+            }
+
+            // Filter out features with no names and construct region list
+            geojson.features = geojson.features.filter(f => getRegionName(f.properties));
+            return geojson;
+        }
+
+        function renderMap() {
+            if (!currentGeoJSON) return;
+
+            const container = document.getElementById('map-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            const svg = d3.select("#d3-canvas")
+                .attr("width", width)
+                .attr("height", height);
+            
+            svg.selectAll("*").remove(); 
+
+            const config = MODES[currentMode];
+            let projection;
+
+            // Choose appropriate projection and fit to screen
+            if (config.projectionType === 'spain' && typeof d3.geoConicConformalSpain === 'function') {
+                projection = d3.geoConicConformalSpain();
+            } else {
+                projection = d3.geoMercator();
+            }
+
+            // Add margin to fitSize bounds
+            const padding = Math.min(width, height) * 0.1;
+            projection.fitExtent([[padding, padding + 40], [width - padding, height - padding - 60]], currentGeoJSON);
+
+            const path = d3.geoPath().projection(projection);
+
+            // Draw paths
+            svg.append("g")
+                .selectAll("path")
+                .data(currentGeoJSON.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("class", d => {
+                    const name = getRegionName(d.properties);
+                    return foundRegions.has(name) ? "map-region correct" : "map-region";
+                })
+                .attr("data-name", d => getRegionName(d.properties))
+                .on("click", handleRegionClick);
+        }
+
+        function handleRegionClick(event, d) {
+            if (!isPlaying) return;
+
+            const clickedName = getRegionName(d.properties);
+            const element = event.currentTarget;
+
+            if (clickedName === currentTarget) {
+                // Correct match
+                d3.select(element).classed("correct", true).classed("error", false);
+                foundRegions.add(clickedName);
+                nextTarget();
+            } else {
+                // Wrong match - trigger animation
+                d3.select(element).classed("error", false); // reset animation
+                void element.offsetWidth; // trigger reflow
+                d3.select(element).classed("error", true);
+            }
+        }
+
+        function nextTarget() {
+            if (remainingRegions.length === 0) {
+                endGame();
+                return;
+            }
+            currentTarget = remainingRegions.pop();
+            
+            // UI Update with fade effect
+            const targetEl = document.getElementById('target-name');
+            targetEl.style.opacity = '0';
+            setTimeout(() => {
+                targetEl.innerText = currentTarget;
+                targetEl.style.opacity = '1';
+            }, 150);
+        }
+
+        function startRound() {
+            if (!currentGeoJSON) return;
+            
+            // Reset game state
+            isPlaying = true;
+            foundRegions.clear();
+            
+            // Rebuild list of unique names
+            const allNames = Array.from(new Set(currentGeoJSON.features.map(f => getRegionName(f.properties))));
+            remainingRegions = shuffleArray([...allNames]);
+            
+            // Reset UI
+            d3.selectAll(".map-region").classed("correct", false).classed("error", false);
+            document.getElementById('timer-display').innerText = '0.0s';
+            
+            // Stop existing timer
+            if (timerInterval) clearInterval(timerInterval);
+            startTime = Date.now();
+            
+            // Start timer loop
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('timer-display').innerText = elapsed.toFixed(1) + 's';
+            }, 100);
+
+            nextTarget();
+        }
+
+        function endGame() {
+            isPlaying = false;
+            clearInterval(timerInterval);
+            
+            const finalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+            document.getElementById('final-time').innerText = finalTime;
+            document.getElementById('target-name').innerText = "Perfecte!";
+            
+            // Show Overlay
+            const overlay = document.getElementById('end-overlay');
+            const modal = document.getElementById('end-modal');
+            overlay.classList.remove('pointer-events-none');
+            overlay.classList.replace('opacity-0', 'opacity-100');
+            modal.classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeOverlayAndRestart() {
+            const overlay = document.getElementById('end-overlay');
+            const modal = document.getElementById('end-modal');
+            
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            modal.classList.replace('scale-100', 'scale-95');
+            
+            setTimeout(() => {
+                overlay.classList.add('pointer-events-none');
+                startRound();
+            }, 300);
+        }
+
+        async function setMode(mode) {
+            if (currentMode === mode && currentGeoJSON) return;
+            
+            // Update UI switch styles
+            ['ccaa', 'prov', 'com'].forEach(m => {
+                const btn = document.getElementById(`btn-${m}`);
+                if (m === mode) {
+                    btn.classList.replace('text-white/60', 'text-white');
+                    btn.classList.add('bg-white/20', 'shadow-[0_2px_10px_rgba(0,0,0,0.1)]');
+                } else {
+                    btn.classList.replace('text-white', 'text-white/60');
+                    btn.classList.remove('bg-white/20', 'shadow-[0_2px_10px_rgba(0,0,0,0.1)]');
+                }
+            });
+
+            currentMode = mode;
+            document.getElementById('target-name').innerText = "Carregant mapes...";
+            
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('timer-display').innerText = '0.0s';
+            isPlaying = false;
+            d3.select("#d3-canvas").selectAll("*").remove();
+
+            // Fetch and Init
+            currentGeoJSON = await fetchMapData(mode);
+            if (currentGeoJSON) {
+                renderMap();
+                startRound();
+            }
+        }
+
+        // Handle window resize dynamically
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (currentGeoJSON) renderMap();
+            }, 250);
+        });
+
+        // Initialize App
+        window.onload = () => {
+            setMode('ccaa');
+        };
+
+    </script>
+</body>
+</html>
